@@ -1,0 +1,69 @@
+#!/usr/bin/env python3
+
+# This is the first attempt at a Python3 compiler wrapper for Clojure.
+# Dr Owain Kenway
+
+import os
+import sys
+import argparse
+import configparser
+import subprocess
+import shlex
+
+# This gets the directory of the script file, even if it subject to a symlink.
+mydirectory = os.path.dirname(os.path.realpath(sys.argv[0]))
+configfile = os.path.join(mydirectory, "clojure-wrappers.ini")
+
+clojureconfig = configparser.ConfigParser()
+clojureconfig.read(configfile)
+
+clojurecp = clojureconfig.get("clojure","classpath").strip("'")
+
+working_directory="."
+
+externalclasspath=os.getenv("CLASSPATH","").strip()
+if len(externalclasspath) > 0:
+    externalclasspath = ":" + externalclasspath
+
+parser = argparse.ArgumentParser(description="Clojure REPL")
+parser.add_argument('-cp', metavar='classpath', type=str, help='Set CLASSPATH.')
+parser.add_argument('-warn', action='store_true', help='Enable reflection warnings.')
+parser.add_argument('-mem', metavar='JVM memory', type=str, help='Set JVM memory.')
+parser.add_argument('-dir', metavar='Destination directory', type=str, help='Set destination directory.')
+args, leftovers = parser.parse_known_args()
+
+jmem = ""
+if args.mem != None:
+    jmem = "-Xmx" + args.mem.strip()
+
+if args.cp !=None:
+    externalclasspath = ":" + args.cp
+
+compargs = ""
+if args.dir != None:
+    working_directory = args.dir
+
+compargs += "-Dclojure.compile.path=" + working_directory + " "
+
+externalclasspath = ":" + working_directory + externalclasspath
+
+if args.warn:
+    compargs += "-Dclojure.compile.warn-on-reflection=true "
+
+
+leftovers_str = ""
+
+# Strip out first --
+if len(leftovers) > 0:
+    if leftovers[0] == "--":
+        leftovers.pop(0)
+
+    # Convert to string
+
+    for a in leftovers:
+        leftovers_str += (" " + a)
+
+command = "java " + jmem + " -cp " + clojurecp + externalclasspath + " " + compargs + " clojure.lang.Compile"  + leftovers_str
+
+rv=subprocess.run(shlex.split(command))
+sys.exit(rv.returncode)

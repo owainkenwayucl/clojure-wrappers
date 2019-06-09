@@ -1,0 +1,56 @@
+#!/usr/bin/env python3
+
+# This is the first attempt at a Python3 REPLEwrapper for Clojure.
+# Dr Owain Kenway
+# This code is distributed under the MIT license.
+
+import os
+import sys
+import argparse
+import configparser
+import subprocess
+import shlex
+
+# This gets the directory of the script file, even if it subject to a symlink.
+mydirectory = os.path.dirname(os.path.realpath(sys.argv[0]))
+configfile = os.path.join(mydirectory, "clojure-wrappers.ini")
+
+clojureconfig = configparser.ConfigParser()
+clojureconfig.read(configfile)
+
+clojurecp = clojureconfig.get("clojure","classpath").strip("'")
+rlwrap = clojureconfig.get("clojure","rlwrap").strip("'")
+
+externalclasspath=os.getenv("CLASSPATH","").strip()
+if len(externalclasspath) > 0:
+    externalclasspath = ":" + externalclasspath
+
+parser = argparse.ArgumentParser(description="Clojure REPL")
+parser.add_argument('-cp', metavar='classpath', type=str, help='Set CLASSPATH.')
+parser.add_argument('-mem', metavar='JVM memory', type=str, help='Set JVM memory.')
+args, leftovers = parser.parse_known_args()
+
+jmem = ""
+if args.mem != None:
+    jmem = "-Xmx" + args.mem.strip()
+
+if args.cp !=None:
+    externalclasspath = ":" + args.cp
+
+leftovers_str = ""
+
+# Strip out first --
+if len(leftovers) > 0:
+    if leftovers[0] == "--":
+        leftovers.pop(0)
+
+    # Convert to string
+    for a in leftovers:
+        leftovers_str += (" " + a)
+
+    rlwrap=""
+command = rlwrap + " java " + jmem + " -cp " + clojurecp + externalclasspath + " " + " clojure.main" + leftovers_str
+
+rv=subprocess.run(shlex.split(command))
+
+sys.exit(rv.returncode)
