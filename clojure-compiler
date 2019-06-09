@@ -25,7 +25,7 @@ externalclasspath=os.getenv("CLASSPATH","").strip()
 if len(externalclasspath) > 0:
     externalclasspath = ":" + externalclasspath
 
-parser = argparse.ArgumentParser(description="Clojure REPL")
+parser = argparse.ArgumentParser(description="Clojure Compiler")
 parser.add_argument('-cp', metavar='classpath', type=str, help='Set CLASSPATH.')
 parser.add_argument('-warn', action='store_true', help='Enable reflection warnings.')
 parser.add_argument('-mem', metavar='JVM memory', type=str, help='Set JVM memory.')
