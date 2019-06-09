@@ -1,6 +1,6 @@
 # Clojure wrappers
 
-By default Clojure has no/fairly terrible wrappers to make it behave like a proper language with a REPL but no compiler etc.  This situation is made even more confusing by the fact that the Debian and Ubuntu packages come with their own wrappers, `clojure` and `clojurec` which start a REPL and a stand-alone compiler respectively.
+By default Clojure has a fairly terrible wrapper to make it behave like a language with a REPL but no compiler.  This situation is made even more confusing by the fact that the Debian and Ubuntu packages come with their own wrappers, `clojure` and `clojurec` which start a REPL and a stand-alone compiler respectively.
 
 This project aims to produce portable wrappers to do the same.
 
