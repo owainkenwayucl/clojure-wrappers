@@ -36,7 +36,7 @@ optional arguments:
                         Set destination directory.
 ```
 
-The wrappers can be configured by editing `clojure-wrappers.ini` to set the`CLASSPATH` and `rlwrap` options appropriately.  By default it's set up appropriately for Ubuntu 18.04's Clojure package.
+The wrappers can be configured by editing `clojure-wrappers.ini` to set the `$CLASSPATH` and `rlwrap` options appropriately.  By default it's set up appropriately for Ubuntu 18.04's Clojure package.
 
 ```none
 [clojure]
